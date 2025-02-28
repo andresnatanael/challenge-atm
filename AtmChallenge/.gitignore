@@ -32,9 +32,6 @@ out/
 *.cache
 *.vs/
 
-# --- Entity Framework Migrations (Optional: Exclude generated migrations) ---
-Migrations/
-
 # --- Rider JetBrains Specific Files ---
 *.sln.iml
 .idea/
