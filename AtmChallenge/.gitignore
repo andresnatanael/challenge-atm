@@ -1,0 +1,66 @@
+# --- macOS Specific ---
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# --- Rider / JetBrains ---
+.idea/
+*.iml
+*.iws
+*.ipr
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/shelf/
+.idea/**/dictionaries
+.idea/**/libraries
+.idea/**/modules.xml
+
+# --- Visual Studio Code ---
+.vscode/
+
+# --- .NET Build Artifacts ---
+bin/
+obj/
+out/
+*.dll
+*.exe
+*.pdb
+*.nuget
+*.nupkg
+*.log
+*.user
+*.cache
+*.vs/
+
+# --- Entity Framework Migrations (Optional: Exclude generated migrations) ---
+Migrations/
+
+# --- Rider JetBrains Specific Files ---
+*.sln.iml
+.idea/
+
+# --- ASP.NET Core Specific ---
+appsettings.Development.json
+appsettings.Production.json
+appsettings.Staging.json
+appsettings.Local.json
+secrets.json
+
+# --- Docker Files ---
+/docker-compose.override.yml
+/.dockerignore
+/data_protection/
+postgres_data/
+
+# --- Node.js & Frontend (If Used) ---
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# --- Logs & Temp Files ---
+*.log
+*.swp
+*.swo
+*.swn
+*.bak
+Thumbs.db
