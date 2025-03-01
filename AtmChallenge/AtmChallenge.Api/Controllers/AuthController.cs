@@ -17,19 +17,19 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest login)
     {
-        if (await _userService.IsUserLockedOutAsync(login.Username))
+        if (await _userService.IsCardNumberLockedOutAsync(login.CardNumber))
         {
-            return Unauthorized(new { message = "User is locked out." });
+            return Unauthorized(new { message = "The Card is locked out." });
         }
 
-        var user = await _userService.AuthenticateUserAsync(login.Username, login.Password);
+        var user = await _userService.AuthenticateUserAsync(login.CardNumber, login.Pin);
         if (user == null)
         {
-            await _userService.RecordFailedLoginAsync(login.Username);
+            await _userService.RecordFailedLoginAsync(login.CardNumber);
             return Unauthorized(new { message = "Invalid credentials." });
         }
 
-        await _userService.ResetFailedAttemptsAsync(login.Username);
+        await _userService.ResetFailedAttemptsAsync(login.CardNumber);
         return Ok(new { message = "Login successful!" });
     }
 }

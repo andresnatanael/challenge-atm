@@ -14,23 +14,12 @@ namespace AtmChallenge.Application.Services
         {
             _userRepository = userRepository;
         }
+        
+        
+        
+        
 
-        public async Task<User?> AuthenticateUserAsync(string username, string password)
-        {
-            var user = await _userRepository.GetByUsernameAsync(username);
-            if (user == null || !VerifyPassword(password, user.PasswordHash))
-                return null;
-
-            return user;
-        }
-
-        public async Task<bool> IsUserLockedOutAsync(string username)
-        {
-            var user = await _userRepository.GetByUsernameAsync(username);
-            return user != null && user.LockoutEnd > DateTime.UtcNow;
-        }
-
-        public async Task RecordFailedLoginAsync(string username)
+        /*public async Task RecordFailedLoginAsync(string username)
         {
             var user = await _userRepository.GetByUsernameAsync(username);
             if (user == null) return;
@@ -59,6 +48,26 @@ namespace AtmChallenge.Application.Services
             using var sha256 = SHA256.Create();
             var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(enteredPassword));
             return Convert.ToBase64String(hashBytes) == storedHash;
+        }*/
+        public Task<User?> AuthenticateUserAsync(string cardNumber, string pin)
+        {
+            
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> IsCardNumberLockedOutAsync(string cardNumber)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RecordFailedLoginAsync(string cardNumber)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task ResetFailedAttemptsAsync(string cardNumber)
+        {
+            throw new NotImplementedException();
         }
     }
 }
