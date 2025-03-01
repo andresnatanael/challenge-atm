@@ -1,4 +1,3 @@
-using System.Transactions;
 using System.ComponentModel.DataAnnotations;
 
 namespace AtmChallenge.Domain.Entities.Card;
@@ -28,5 +27,5 @@ public class Card
     public int FailedLoginAttempts { get; set; } = 0;
     public DateTime? LockoutEnd { get; set; }
     public Double Balance { get; set; }
-    public List<Transaction> Transactions { get; set; }
+    public List<CardTransaction> Transactions { get; set; }
 }
