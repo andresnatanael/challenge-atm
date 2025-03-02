@@ -7,16 +7,20 @@
       "launchBrowser": false,
       "applicationUrl": "http://localhost:5087",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "PUBLIC_KEY_PATH": "certificates/public_key.pem",
+        "PRIVATE_KEY_PATH": "certificates/private_key.pem"
+        }
+      },
     "https": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": false,
       "applicationUrl": "https://localhost:7258;http://localhost:5087",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "PUBLIC_KEY_PATH": "certificates/public_key.pem",
+        "PRIVATE_KEY_PATH": "certificates/private_key.pem"
       }
     }
   }

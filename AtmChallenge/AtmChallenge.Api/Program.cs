@@ -49,6 +49,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// 🔹 Crypto Service
+builder.Services.AddSingleton<ICryptoService,CryptoService>();
+
 var app = builder.Build();
 
 // 🔹 Run Migrations Automatically on Startup

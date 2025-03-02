@@ -1,4 +1,4 @@
-# Use official .NET 8 SDK image to build the project
+# Use official .NET 9 SDK image to build the project
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /app
 
@@ -18,7 +18,14 @@ WORKDIR /app
 # Copy the published output from the build stage
 COPY --from=build /out .
 
-# Expose API port
+# 🔹 Ensure the certificates folder exists
+RUN mkdir -p /app/certificates
+
+# 🔹 Copy default RSA keys into the container
+COPY certificates/public_key.pem /app/certificates/public_key.pem
+COPY certificates/private_key.pem /app/certificates/private_key.pem
+
+# Expose API ports
 EXPOSE 8080
 EXPOSE 8081
 
