@@ -21,6 +21,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // 🔹 Register Services (Dependency Injection)
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<UserRepository>();
+builder.Services.AddScoped<CardRepository>();
 
 // 🔹 Configure JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

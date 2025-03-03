@@ -27,8 +27,8 @@
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__PostgreSQLConnection: "Host=postgres;Port=5432;Database=postgres;Username=postgres;Password=postgres"
-      PUBLIC_KEY_PATH: "/app/certificates/public_key.pem"
-      PRIVATE_KEY_PATH: "/app/certificates/private_key.pem"
+      AES_SECRET_KEY: "qHcLXZMR29eBLlCPXnD2cjXKMxaBjRyz8ytSi2BcK+Y="
+      AES_IV: "ka0v0cLgGIrh76Ve/P+wuA=="
     ports:
       - "8080:8080"
       - "8081:8081"

@@ -1,23 +1,13 @@
 # Encryption
 
-Once the credit card and pin are provided, those are encrypted using RSA 2048 key/pair.
+1. Create the 32 bytes AES SECRET KEY for 256-bit encryption
+openssl rand -base64 32
 
-The card numbers are never or pin are stored encrypted.
+2. Creates the 16 bytes AES IV for 126-bit block size
+openssl rand -base64 16
 
-The data required to access the endpoints are also encrypted inside the JWT token, if anyone opens the token, will
-not be able to get any sensitive information.
-
-A self-signed certificate is provided as an example, but this must be replaced for prod environments.
-Those certificates are under the certificates folder
-
-For Custom keys please override the following path with your certificates in the docker-compose
-
-    volumes:
-      - ./custom_certificates:/app/certificates
+Configure the env variables into the docker-compose file.
 
 # Local
 
-Set the following env variables.
-
-export PUBLIC_KEY_PATH="$(pwd)/certificates/public_key.pem
-export PRIVATE_KEY_PATH="$(pwd)/certificates/private_key.pem
+init-script.sql contains some data, for testing.

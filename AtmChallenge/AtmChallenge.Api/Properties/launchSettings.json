@@ -8,8 +8,8 @@
       "applicationUrl": "http://localhost:5087",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "PUBLIC_KEY_PATH": "certificates/public_key.pem",
-        "PRIVATE_KEY_PATH": "certificates/private_key.pem"
+        "AES_SECRET_KEY": "qHcLXZMR29eBLlCPXnD2cjXKMxaBjRyz8ytSi2BcK+Y=",
+        "AES_IV": "ka0v0cLgGIrh76Ve/P+wuA=="
         }
       },
     "https": {
@@ -19,8 +19,8 @@
       "applicationUrl": "https://localhost:7258;http://localhost:5087",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "PUBLIC_KEY_PATH": "certificates/public_key.pem",
-        "PRIVATE_KEY_PATH": "certificates/private_key.pem"
+        "AES_SECRET_KEY": "qHcLXZMR29eBLlCPXnD2cjXKMxaBjRyz8ytSi2BcK+Y=",
+        "AES_IV": "ka0v0cLgGIrh76Ve/P+wuA=="
       }
     }
   }

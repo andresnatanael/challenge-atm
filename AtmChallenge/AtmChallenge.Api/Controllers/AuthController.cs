@@ -7,7 +7,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-
 namespace AtmChallenge.API.Controllers;
 
 [Route("api/auth")]
@@ -31,7 +30,7 @@ public class AuthController : ControllerBase
         var encryptedCardNumber = _cryptoService.EncryptData(login.CardNumber);
         var encryptedPin = _cryptoService.EncryptData(login.Pin);
         
-        if (await _userService.IsCardNumberLockedOutAsync(encryptedCardNumber))
+        if (await _userService.IsCardNumberLockedOutAsync(encryptedCardNumber) == null)
         {
             return Unauthorized(new { message = "The Card is locked out." });
         }

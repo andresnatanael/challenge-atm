@@ -17,7 +17,12 @@ public class CardRepository
     {
         return await _context.Cards.SingleOrDefaultAsync(u => u.NumberHash == numberHash && u.PinHash == pinHash);
     }
-
+    
+    public async Task<Card?> GetCardByHash(string numberHash)
+    {
+        return await _context.Cards.SingleOrDefaultAsync(u => u.NumberHash == numberHash);
+    }
+    
     public async Task UpdateAsync(Card card)
     {
         _context.Cards.Update(card);

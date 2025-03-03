@@ -18,13 +18,6 @@ WORKDIR /app
 # Copy the published output from the build stage
 COPY --from=build /out .
 
-# 🔹 Ensure the certificates folder exists
-RUN mkdir -p /app/certificates
-
-# 🔹 Copy default RSA keys into the container
-COPY certificates/public_key.pem /app/certificates/public_key.pem
-COPY certificates/private_key.pem /app/certificates/private_key.pem
-
 # Expose API ports
 EXPOSE 8080
 EXPOSE 8081
