@@ -20,7 +20,9 @@ public class CardRepository
     
     public async Task<Card?> GetCardByHash(string numberHash)
     {
-        return await _context.Cards.SingleOrDefaultAsync(u => u.NumberHash == numberHash);
+        return await _context.Cards
+            .Include(c => c.User)
+            .SingleOrDefaultAsync(c => c.NumberHash == numberHash);
     }
     
     public async Task UpdateAsync(Card card)
