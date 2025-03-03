@@ -50,7 +50,7 @@ DO $$
             (
                 -- Encrypted with AES-256, e.g. 5218395232872386 -> 2sbRKHjrtPNhMXn0FTxQEM3F110HUzCOB/bkezXPHWk=
                 '2sbRKHjrtPNhMXn0FTxQEM3F110HUzCOB/bkezXPHWk=',
-                -- PIN 436826 -> g29VgXigcROtLEBnTcy3nQ
+                -- PIN 436826 -> g29VgXigcROtLEBnTcy3nQ==
                 'g29VgXigcROtLEBnTcy3nQ==',
                 1,  -- Example "Network"
                 1,  -- Example "Type"
