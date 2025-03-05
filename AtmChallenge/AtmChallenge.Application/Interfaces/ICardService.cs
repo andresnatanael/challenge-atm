@@ -5,6 +5,6 @@ namespace AtmChallenge.Application.Interfaces;
 public interface ICardService
 {
     Task<double> GetBalance(string encryptedCardNumber);
-    Task<List<CardTransaction>> GetTransactions(string encryptedCardNumber);
-    Task<CardTransaction> Withdraw(string encryptedCardNumber, double amount);
+    Task<(List<CardTransaction>, int)> GetTransactions(string encryptedCardNumber, int page, int pageSize);
+    Task<(CardTransaction, double)> Withdraw(string encryptedCardNumber, double amount, string idempotencyKey);
 }

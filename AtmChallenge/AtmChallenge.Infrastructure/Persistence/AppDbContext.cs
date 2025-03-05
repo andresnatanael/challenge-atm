@@ -11,5 +11,7 @@ namespace AtmChallenge.Infrastructure.Persistence
         public DbSet<User> Users { get; set; }
         
         public DbSet<Card> Cards { get; set; }
+        
+        public DbSet<CardTransaction?> CardTransactions { get; set; }
     }
 }

@@ -19,6 +19,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // 🔹 Register Services (Dependency Injection)
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICardService, CardService>();
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<CardRepository>();
 

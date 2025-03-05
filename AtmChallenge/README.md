@@ -11,3 +11,5 @@ Configure the env variables into the docker-compose file.
 # Local
 
 init-script.sql contains some data, for testing.
+
+`dotnet ef migrations add FirstMigration --project AtmChallenge.Infrastructure --startup-project AtmChallenge.Api`

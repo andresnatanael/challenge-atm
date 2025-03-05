@@ -1,21 +1,47 @@
 using System.Security.Claims;
 using AtmChallenge.Application.DTOs;
+using AtmChallenge.Application.Exceptions;
+using AtmChallenge.Application.Interfaces;
+using AtmChallenge.Application.Services;
+using AtmChallenge.Domain.Entities.Card;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using AtmChallenge.Infrastructure.Repositories;
 
-[Authorize] // Require authentication for all card operations
+[Authorize]
 [ApiController]
 [Route("api/v1/card")]
 public class CardController : ControllerBase
 {
-    private readonly CardRepository _cardRepository;
+    private readonly ICardService _cardService;
     private readonly ILogger<CardController> _logger;
 
-    public CardController(CardRepository cardRepository, ILogger<CardController> logger)
+    public CardController(ICardService cardService, ILogger<CardController> logger)
     {
-        _cardRepository = cardRepository;
+        _cardService = cardService;
         _logger = logger;
+    }
+    
+    [HttpGet("operations")]
+    public async Task<IActionResult> GetOperations([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    {
+        string encryptedCard = GetEncryptedCardNumber();
+        if (encryptedCard == null) return Unauthorized("❌ Invalid token.");
+
+        var (transactions, totalRecords) = await _cardService.GetTransactions(encryptedCard, page, pageSize);
+
+        if (transactions == null || transactions.Count == 0)
+            return NotFound("❌ No transactions found.");
+
+        var totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
+
+        return Ok(new
+        {
+            TotalRecords = totalRecords,
+            TotalPages = totalPages,
+            CurrentPage = page,
+            PageSize = pageSize,
+            Transactions = transactions
+        });
     }
 
     /// 🔹 **Get Card Balance (Extracts EncryptedCard from JWT)**
@@ -25,16 +51,20 @@ public class CardController : ControllerBase
         string encryptedCard = GetEncryptedCardNumber();
         if (encryptedCard == null)
         {
+            _logger.LogError("The ClaimsPrincipal does not contain an EncryptedCard.");
             return Unauthorized("❌ Invalid token.");
         }
 
-        var card = await _cardRepository.GetCardByHash(encryptedCard);
-        if (card == null)
+        try
         {
+            double balance = await _cardService.GetBalance(encryptedCard);
+            return Ok(new { Balance = balance });
+        }
+        catch (CardNotFoundException ex)
+        {
+            _logger.LogError(ex, "Card not found.");
             return NotFound("❌ Card not found.");
         }
-
-        return Ok(new { Balance = card.Balance });
     }
 
     [HttpPost("withdrawal")]
@@ -45,36 +75,37 @@ public class CardController : ControllerBase
         {
             return Unauthorized("❌ Invalid token.");
         }
-
-        var card = await _cardRepository.GetCardByHash(encryptedCard);
-        if (card == null)
+        
+        try
         {
-            return NotFound("❌ Card not found.");
+            var result = await _cardService.Withdraw(encryptedCard, request.Amount, idempotencyKey);
+            CardTransaction transaction = result.Item1;
+            double newBalance = result.Item2;
+            return StatusCode(201, new
+            {
+                Message = "✅ Withdrawal processed successfully!",
+                TransactionId = transaction.Id,
+                NewBalance = newBalance
+            });
         }
-
-        if (card.Balance < request.Amount)
+        catch (InsufficientBalanceException ex)
         {
+            _logger.LogError(ex, "Insufficient funds.");
             return BadRequest("❌ Insufficient funds.");
         }
-
-        card.Balance -= request.Amount;
-        await _cardRepository.UpdateAsync(card);
-
-        return Ok(new { Message = "✅ Withdrawal successful.", NewBalance = card.Balance });
+        catch (TxDuplicatedException ex)
+        {
+            _logger.LogWarning("The Transaction was already submitted");
+            _logger.LogWarning("The transaction was already submitted for the idempotencyKey: {key}",
+                idempotencyKey);
+            return StatusCode(202, new
+            {
+                Message = "Withdrawal already processed. " + ex.Message,
+            });
+        }
     }
-
-    /* 🔹 **Get Card Operations (Extracts EncryptedCard from JWT)**
-    [HttpGet("operations")]
-    public async Task<IActionResult> GetOperations()
-    {
-        string encryptedCard = GetEncryptedCardNumber();
-        if (encryptedCard == null) return Unauthorized("❌ Invalid token.");
-
-        var transactions = await _cardRepository.GetCardTransactionsAsync(encryptedCard);
-        if (transactions == null || transactions.Count == 0) return NotFound("❌ No transactions found.");
-
-        return Ok(transactions);
-    }*/
+    
+    
 
     /// 🔹 **Extracts EncryptedCard from JWT Claims**
     private string GetEncryptedCardNumber()
