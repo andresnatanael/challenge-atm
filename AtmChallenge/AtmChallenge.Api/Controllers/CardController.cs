@@ -2,7 +2,6 @@ using System.Security.Claims;
 using AtmChallenge.Application.DTOs;
 using AtmChallenge.Application.Exceptions;
 using AtmChallenge.Application.Interfaces;
-using AtmChallenge.Application.Services;
 using AtmChallenge.Domain.Entities.Card;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -31,16 +30,27 @@ public class CardController : ControllerBase
 
         if (transactions == null || transactions.Count == 0)
             return NotFound("❌ No transactions found.");
+        
+        
 
         var totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
-
+        
+        var transactionResponses = transactions.Select(transaction => new CardOperationResponse
+        {
+            Id = transaction.Id,
+            Amount = transaction.Amount,
+            Date = transaction.Date,
+            AtmLocation = transaction.AtmLocation,
+            Type = transaction.Type.ToString()
+        }).ToList();
+        
         return Ok(new
         {
             TotalRecords = totalRecords,
             TotalPages = totalPages,
             CurrentPage = page,
             PageSize = pageSize,
-            Transactions = transactions
+            Transactions = transactionResponses
         });
     }
 
@@ -106,20 +116,9 @@ public class CardController : ControllerBase
     }
     
     
-
     /// 🔹 **Extracts EncryptedCard from JWT Claims**
     private string GetEncryptedCardNumber()
     {
         return User.Claims.FirstOrDefault(c => c.Type == "EncryptedCard")?.Value;
-    }
-
-    private string GetUserId()
-    {
-        return User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
-    }
-
-    private string GetUsername()
-    {
-        return User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
     }
 }
