@@ -32,8 +32,7 @@ public class CardRepository
         if (pageSize > 100) pageSize = 100; // 🔹 Prevent excessive data fetching
 
         var query = _context.CardTransactions
-            .Include(t => t.Card) // 🔹 Ensure Card is loaded to prevent null issues
-            .Where(t => t.Card != null && t.Card.NumberHash == encryptedCardNumber)
+            .Where(t => t.Card.NumberHash != null && t.Card.NumberHash == encryptedCardNumber)
             .OrderByDescending(t => t.Date);
 
         int totalRecords = await query.CountAsync(); // 🔹 Optimize total count calculation
