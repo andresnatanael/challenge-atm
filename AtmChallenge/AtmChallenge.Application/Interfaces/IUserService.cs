@@ -5,8 +5,8 @@ namespace AtmChallenge.Application.Interfaces
 {
     public interface IUserService
     {
-        Task<string> AuthenticateUserAsync(string encryptedCardNumber, string encryptedPin);
-        Task<Card?> IsCardNumberLockedOutAsync(string encryptedCardNumber);
+        Task<User> AuthenticateUserAsync(string encryptedCardNumber, string encryptedPin);
+        Task<bool?> IsCardNumberLockedOutAsync(string encryptedCardNumber);
         Task RecordFailedLoginAsync(string encryptedCardNumber);
         Task ResetFailedAttemptsAsync(string encryptedCardNumber);
     }

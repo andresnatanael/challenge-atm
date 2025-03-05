@@ -9,7 +9,7 @@ using System.Text;
 
 namespace AtmChallenge.API.Controllers;
 
-[Route("api/auth")]
+[Route("api/v1/auth")]
 [ApiController]
 public class AuthController : ControllerBase
 {
@@ -30,9 +30,10 @@ public class AuthController : ControllerBase
         var encryptedCardNumber = _cryptoService.EncryptData(login.CardNumber);
         var encryptedPin = _cryptoService.EncryptData(login.Pin);
         
-        if (await _userService.IsCardNumberLockedOutAsync(encryptedCardNumber) == null)
+        var cardLocked = await _userService.IsCardNumberLockedOutAsync(encryptedCardNumber);
+        if (cardLocked == true)
         {
-            return Unauthorized(new { message = "The Card is locked out." });
+            return Unauthorized(new { message = "Card locked out." });
         }
 
         var user = await _userService.AuthenticateUserAsync(encryptedCardNumber, encryptedPin);
@@ -43,7 +44,14 @@ public class AuthController : ControllerBase
         }
 
         await _userService.ResetFailedAttemptsAsync(encryptedCardNumber);
-        return Ok(new { message = "Login successful!" });
+        string jwtToken = GenerateJwtToken(user.Username, user.Id, encryptedCardNumber);
+        
+        return Ok(new
+        {
+            access_token = jwtToken,
+            type = "Bearer",
+            expires_in = 600,
+        });
     }
     
     
