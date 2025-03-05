@@ -6,8 +6,7 @@ using AtmChallenge.Application.Services;
 using AtmChallenge.Infrastructure.Persistence;
 using AtmChallenge.Infrastructure.Repositories;
 using System.Text;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,7 +47,40 @@ builder.Services.AddControllers();
 
 // 🔹 Configure Swagger
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// 🔹 Add Swagger and Configure JWT Authentication
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "ATM API",
+        Version = "v1",
+        Description = "API for Card Operations with JWT Authentication"
+    });
+
+    // 🔹 Define the security scheme
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter 'Bearer {your_token_here}' to authenticate"
+    });
+
+    // 🔹 Apply the security scheme globally
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+            },
+            new string[] {}
+        }
+    });
+});
+
 
 // 🔹 Crypto Service
 builder.Services.AddSingleton<ICryptoService,CryptoService>();
