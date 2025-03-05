@@ -1,11 +1,7 @@
-using System;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using AtmChallenge.Application.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using AtmChallenge.Application.Services;
 using AtmChallenge.Infrastructure.Repositories;
 
 [Authorize] // Require authentication for all card operations
@@ -14,10 +10,12 @@ using AtmChallenge.Infrastructure.Repositories;
 public class CardController : ControllerBase
 {
     private readonly CardRepository _cardRepository;
+    private readonly ILogger<CardController> _logger;
 
-    public CardController(CardRepository cardRepository)
+    public CardController(CardRepository cardRepository, ILogger<CardController> logger)
     {
         _cardRepository = cardRepository;
+        _logger = logger;
     }
 
     /// 🔹 **Get Card Balance (Extracts EncryptedCard from JWT)**
@@ -25,24 +23,39 @@ public class CardController : ControllerBase
     public async Task<IActionResult> GetBalance()
     {
         string encryptedCard = GetEncryptedCardNumber();
-        if (encryptedCard == null) return Unauthorized("❌ Invalid token.");
+        if (encryptedCard == null)
+        {
+            return Unauthorized("❌ Invalid token.");
+        }
 
         var card = await _cardRepository.GetCardByHash(encryptedCard);
-        if (card == null) return NotFound("❌ Card not found.");
+        if (card == null)
+        {
+            return NotFound("❌ Card not found.");
+        }
 
         return Ok(new { Balance = card.Balance });
     }
 
-    /// 🔹 **Withdraw Money (Extracts EncryptedCard from JWT)**
-    [HttpPost("withdraw")]
-    public async Task<IActionResult> Withdraw([FromBody] WithdrawRequest request)
+    [HttpPost("withdrawal")]
+    public async Task<IActionResult> Withdraw([FromBody] WithdrawRequest request, [FromHeader(Name = "Idempotency-Key")] string idempotencyKey)
     {
         string encryptedCard = GetEncryptedCardNumber();
-        if (encryptedCard == null) return Unauthorized("❌ Invalid token.");
+        if (encryptedCard == null)
+        {
+            return Unauthorized("❌ Invalid token.");
+        }
 
         var card = await _cardRepository.GetCardByHash(encryptedCard);
-        if (card == null) return NotFound("❌ Card not found.");
-        if (card.Balance < request.Amount) return BadRequest("❌ Insufficient funds.");
+        if (card == null)
+        {
+            return NotFound("❌ Card not found.");
+        }
+
+        if (card.Balance < request.Amount)
+        {
+            return BadRequest("❌ Insufficient funds.");
+        }
 
         card.Balance -= request.Amount;
         await _cardRepository.UpdateAsync(card);

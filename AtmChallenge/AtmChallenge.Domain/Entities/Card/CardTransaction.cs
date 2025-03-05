@@ -15,5 +15,7 @@ public class CardTransaction
     public DateTime Date { get; set; }
     public Card Card { get; set; }
     public String AtmLocation { get; set; }
+    [Required]
+    public string IdempotencyKey { get; set; } 
     public TransactionType Type { get; set; }
 }
