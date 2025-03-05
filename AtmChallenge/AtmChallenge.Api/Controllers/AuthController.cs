@@ -4,8 +4,10 @@ using AtmChallenge.Application.Interfaces;
 
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Authentication;
 using System.Security.Claims;
 using System.Text;
+using AtmChallenge.Application.Exceptions;
 
 namespace AtmChallenge.API.Controllers;
 
@@ -16,44 +18,59 @@ public class AuthController : ControllerBase
     private readonly IUserService _userService;
     private readonly IConfiguration _configuration;
     private readonly ICryptoService _cryptoService;
+    private readonly ILogger<AuthController> _logger;
 
-    public AuthController(IUserService userService, ICryptoService cryptoService, IConfiguration configuration)
+    public AuthController(IUserService userService, ICryptoService cryptoService, IConfiguration configuration, ILogger<AuthController> logger)
     {
         _userService = userService;
         _cryptoService = cryptoService;
         _configuration = configuration;
-    }
-
-    [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginRequest login)
-    {   
-        var encryptedCardNumber = _cryptoService.EncryptData(login.CardNumber);
-        var encryptedPin = _cryptoService.EncryptData(login.Pin);
-        
-        var cardLocked = await _userService.IsCardNumberLockedOutAsync(encryptedCardNumber);
-        if (cardLocked == true)
-        {
-            return Unauthorized(new { message = "Card locked out." });
-        }
-
-        var user = await _userService.AuthenticateUserAsync(encryptedCardNumber, encryptedPin);
-        if (user == null)
-        {
-            await _userService.RecordFailedLoginAsync(encryptedCardNumber);
-            return Unauthorized(new { message = "Invalid credentials." });
-        }
-
-        await _userService.ResetFailedAttemptsAsync(encryptedCardNumber);
-        string jwtToken = GenerateJwtToken(user.Username, user.Id, encryptedCardNumber);
-        
-        return Ok(new
-        {
-            access_token = jwtToken,
-            type = "Bearer",
-            expires_in = 600,
-        });
+        _logger = logger;
     }
     
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginRequest login)
+    {
+        _logger.LogInformation("Login request received.");
+        var encryptedCardNumber = _cryptoService.EncryptData(login.CardNumber);
+        var encryptedPin = _cryptoService.EncryptData(login.Pin);
+        try
+        {
+            var cardLocked = await _userService.IsCardNumberLockedOutAsync(encryptedCardNumber);
+            if (cardLocked == true)
+            {
+                return Unauthorized(new { message = "Card locked out." });
+            }
+
+            var user = await _userService.AuthenticateUserAsync(encryptedCardNumber, encryptedPin);
+            await _userService.ResetFailedAttemptsAsync(encryptedCardNumber);
+
+            string jwtToken = GenerateJwtToken(user.Username, user.Id, encryptedCardNumber);
+
+            return Ok(new
+            {
+                access_token = jwtToken,
+                type = "Bearer",
+                expires_in = 600,
+            });
+        }
+        catch (CardNotFoundException ex)
+        {
+            _logger.LogError(ex, "Card not found.");
+            return Unauthorized(new { message = "Card not found." });
+        }
+        catch (InvalidCredentialException ex)
+        {
+            await _userService.RecordFailedLoginAsync(encryptedCardNumber);
+            _logger.LogError(ex, "Invalid credentials provided.");
+            return Unauthorized(new { message = "Invalid credentials provided." });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An unexpected error occurred.");
+            return StatusCode(500, new { message = "An unexpected error occurred." });
+        }
+    }
     
     private string GenerateJwtToken(string userName, int userId, string encryptedCard)
     {
