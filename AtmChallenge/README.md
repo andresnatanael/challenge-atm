@@ -10,6 +10,12 @@ Configure the env variables into the docker-compose file.
 
 # Local
 
-init-script.sql contains some data, for testing.
+Add the testing data once the database and app started.
+
+```bash
+docker exec -i postgres_container psql -U postgres -d postgres < init-script.sql
+```
 
 `dotnet ef migrations add FirstMigration --project AtmChallenge.Infrastructure --startup-project AtmChallenge.Api`
+
+
