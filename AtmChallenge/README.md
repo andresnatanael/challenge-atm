@@ -110,6 +110,28 @@ Here you need to put the token that you got on the login endpoint
     }'
 ```
 
+# Diagrams
+
+### ER
+
+![Alt text](./diagrams/der.svg)
+
+### Sequence Diagram Login
+
+![Alt text](./diagrams/login-sequence.svg)
+
+### Sequence Diagram Balance
+
+![Alt text](./diagrams/balance-sequence.svg)
+
+### Sequence Diagram Withdrawal
+
+![Alt text](./diagrams/withdrawal-sequence.svg)
+
+### Sequence Diagram Operations
+
+![Alt text](./diagrams/operations-sequence.svg)
+
 # Encryption
 In order to keep the sensitive data secure, the API it's using AES 256-bit encryption.
 That encrypts the card number and the pin once it's authenticated.
