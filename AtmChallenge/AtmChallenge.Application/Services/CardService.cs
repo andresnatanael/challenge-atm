@@ -1,12 +1,13 @@
 using AtmChallenge.Application.Exceptions;
 using AtmChallenge.Application.Interfaces;
 using AtmChallenge.Domain.Entities.Card;
+using AtmChallenge.Infrastructure.Interfaces;
 using AtmChallenge.Infrastructure.Repositories;
 using Microsoft.Extensions.Logging;
 
 namespace AtmChallenge.Application.Services;
 
-public class CardService(CardRepository cardRepository, ILogger<CardService> logger) : ICardService
+public class CardService(ICardRepository cardRepository, ILogger<CardService> logger) : ICardService
 {
     public async Task<double> GetBalance(string encryptedCardNumber)
     {

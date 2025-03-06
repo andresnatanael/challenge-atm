@@ -2,12 +2,13 @@ using System.Security.Authentication;
 using AtmChallenge.Application.Exceptions;
 using AtmChallenge.Application.Interfaces;
 using AtmChallenge.Domain.Entities;
+using AtmChallenge.Infrastructure.Interfaces;
 using AtmChallenge.Infrastructure.Repositories;
 using Microsoft.Extensions.Logging;
 
 namespace AtmChallenge.Application.Services
 {
-    public class UserService(CardRepository cardRepository, ILogger<UserService> logger) : IUserService
+    public class UserService(ICardRepository cardRepository, ILogger<UserService> logger) : IUserService
     {
         public async Task<User> AuthenticateUserAsync(string encryptedCardNumber, string encryptedPin)
         {

@@ -1,10 +1,11 @@
 using AtmChallenge.Domain.Entities.Card;
+using AtmChallenge.Infrastructure.Interfaces;
 using AtmChallenge.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace AtmChallenge.Infrastructure.Repositories;
 
-public class CardRepository
+public class CardRepository : ICardRepository
 {
     private readonly AppDbContext _context;
 

@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using AtmChallenge.Domain.Entities;
+using AtmChallenge.Infrastructure.Interfaces;
 using AtmChallenge.Infrastructure.Persistence;
 
 namespace AtmChallenge.Infrastructure.Repositories
 {
-    public class UserRepository
+    public class UserRepository : IUserRepository
     {
         private readonly AppDbContext _context;
 

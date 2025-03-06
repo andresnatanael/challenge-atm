@@ -6,6 +6,7 @@ using AtmChallenge.Application.Services;
 using AtmChallenge.Infrastructure.Persistence;
 using AtmChallenge.Infrastructure.Repositories;
 using System.Text;
+using AtmChallenge.Infrastructure.Interfaces;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,8 +21,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // 🔹 Register Services (Dependency Injection)
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICardService, CardService>();
-builder.Services.AddScoped<UserRepository>();
-builder.Services.AddScoped<CardRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICardRepository, CardRepository>();
 
 // 🔹 Configure JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
